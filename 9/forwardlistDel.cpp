@@ -5,7 +5,10 @@ using namespace std;
 
 //删除forwardlist里的奇数元素
 void deleteOdd();
-
+//删除list里的奇数元素
+void deleteEvenOfList();
+//删除forwardlist里的奇数元素
+void deleteEvenOfforwardList();
 //编写函数接受一个list和两个字符串s1和s2，在list中查找第一个s1，并s2插入到s1后面
 //如果未找到，则将s2插到list末尾
 void reviseList(forward_list<string> & sf,const string &s1,const string &s2);
@@ -59,5 +62,43 @@ void reviseList(forward_list<string> & sf,const string &s1,const string &s2){
     }
     for(auto c:sf){
         cout<<c<<" ";
+    }
+}
+
+//删除list里的偶数数元素,复制奇数元素
+void deleteEvenOfList(){
+    list<int> ili = {1,2,3,4,5,6,7,8};
+    auto cur = ili.begin();
+    while(cur!=ili.end()){
+        if(*cur & 1){
+            cur = ili.insert(cur,*cur);
+            //注意这里要指针移动两次，因为insert是在当前迭代器之前插入，
+            //返回插入之后的第一个新值的迭代器
+            cur++;
+            cur++;
+        }
+        else{
+            cur = ili.erase(cur);
+        }
+    }
+
+    for(auto c:ili){
+        cout<<c<<" ";
+    }
+    cout<<endl;
+}
+
+void deleteEvenOfforwardList(){
+    forward_list<int> ili = {1,2,3,4,5,6,7,8};
+    auto prev = ili.before_begin();
+    auto cur = ili.begin();
+    while(cur != ili.end()){
+        if(*cur & 1){
+            cur = ili.insert_after(cur,*cur);
+            prev = cur;
+            cur++;
+        }else{
+            cur = ili.erase_after(prev);
+        }
     }
 }
