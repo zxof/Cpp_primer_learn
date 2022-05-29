@@ -24,6 +24,16 @@ void Message::remove_from_folder(){
         f->remMeg(this);
     }
 }
+void Message::move_Folders(Message* m){
+    // set赋值
+    folders = std::move(m->folders);
+    // 将本Message添加到Folder中
+    for(auto f : folders){
+        f->remMeg(m);
+        f->addMsg(this);
+    }
+    m->folders.clear();
+}
 // 拷贝构造函数
 Message::Message(const Message& m):contents(m.contents),folders(m.folders){
     add_to_folders(m);
@@ -31,10 +41,27 @@ Message::Message(const Message& m):contents(m.contents),folders(m.folders){
 // 拷贝赋值运算符
 // 注意这个拷贝赋值运算符需要保证即使自身赋值也可以正常执行
 Message& Message::operator=(const Message&rhs){
+    // 左侧对象销毁
     remove_from_folder();
     contents = rhs.contents;
     folders = rhs.folders;
     add_to_folders(rhs);
+    return *this;
+}
+// 移动构造函数
+Message::Message(Message &&m):contents(std::move(m.contents)){
+    move_Folders(&m);
+}
+Message& Message::operator=(Message&& rhs){
+    // 检查自赋值 
+    if(this!=&rhs){
+        // 清除旧值
+        remove_from_folder();
+        // 移动赋值运算
+        contents = std::move(rhs.contents);
+        // 重置指针
+        move_Folders(&rhs);
+    }
     return *this;
 }
 Message::~Message(){

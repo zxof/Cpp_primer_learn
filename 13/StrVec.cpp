@@ -1,5 +1,6 @@
 #include "StrVec.h"
 
+std::allocator<std::string> StrVec::alloc;
 StrVec::StrVec(std::initializer_list<std::string> il){
     auto newData = alloc_n_copy(il.begin(),il.end());
     element = newData.first;
@@ -12,6 +13,7 @@ StrVec::StrVec(const StrVec& lhs){
     auto data = alloc_n_copy(lhs.begin(),lhs.end());
     element = data.first;
     first_free = cap = data.second;
+     printf("call copy construct");
 }
 
 StrVec& StrVec::operator=(const StrVec& rhs){
@@ -20,6 +22,24 @@ StrVec& StrVec::operator=(const StrVec& rhs){
     free();
     element = data.first;
     first_free = cap = data.second;
+    printf("call & =\n");
+    return *this;
+}
+
+StrVec& StrVec::operator=(StrVec &&rhs)noexcept{
+    // 排除自赋值
+    if(this!=&rhs){
+        // 释放已有元素
+        free();
+        // 接管资源
+        element = rhs.element;
+        first_free = rhs.first_free;
+        cap = rhs.cap;
+        // 旧元素置空
+        rhs.element = rhs.cap = rhs.first_free = 0;
+    }
+    
+    printf("call && =\n");
     return *this;
 }
 
@@ -32,6 +52,14 @@ void StrVec::push_back(const std::string& s){
     check_n_alloc();
     // 构造一个string对象并传递给指针
     alloc.construct(first_free++,s);
+    printf("call & push_back\n");
+}
+
+void StrVec::push_back(std::string&& s){
+    check_n_alloc();
+    // 移动s构造新的值
+    alloc.construct(first_free++,std::move(s));
+    printf("call && push_back\n");
 }
 
 std::pair<std::string*,std::string*> 
@@ -64,6 +92,7 @@ void StrVec::reallocate(){
     free();
     // 更新首指针和容量指针
     element = newdata;
+    first_free = dest;
     cap = element+newCap;
     
 }
@@ -95,4 +124,13 @@ void StrVec::resize(size_t n){
         while(size()>n)
             alloc.destroy(--first_free);
     }
+}
+
+
+int main(){
+    StrVec str;
+    std::string s = "some or some";
+     str.push_back(s);
+     str.push_back("lovev");
+    return 0;
 }

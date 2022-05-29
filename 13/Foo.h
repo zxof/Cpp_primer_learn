@@ -12,6 +12,7 @@ public:
     Foo(const Foo&);
     Foo(int i1,int j1):i(i1),j(j1){}
     Foo& operator=(const Foo&);
+    Foo& operator=(Foo &&)noexcept;
     // 析构函数
     ~Foo();
 private:
@@ -26,7 +27,16 @@ Foo& Foo::operator=(const Foo&f){
     j=f.j;
     return *this;
 }
+Foo& Foo::operator=(Foo&& f)noexcept{
+    if(this != &f){
+        i = f.i;
+        j = f.j;
+        f.i = f.j = 0;
+    }
+    return *this;
+}
 Foo::~Foo(){
+    i = j =0;
     std::cout<<"delete this Foo\n";
 }
 

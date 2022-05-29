@@ -9,7 +9,7 @@
 #include<iostream>
 #include<string>
 #include<set>
-
+class Folder;
 class Message{
     friend class Folder;
 public:
@@ -18,6 +18,9 @@ public:
     // 拷贝控制成员
     Message(const Message&);
     Message& operator=(const Message&);
+    // 移动控制
+    Message(Message&&);
+    Message& operator=(Message &&);
     ~Message();
     // 将本message成员存放在folder中、删除本Message`
     void save(Folder &f);
@@ -34,6 +37,8 @@ private:
     // 添加和删除文件目录
     void addFldr(Folder* f){folders.insert(f);}
     void remFldr(Folder* f){folders.erase(f);}
+    // 指针移动函数
+    void move_Folders(Message*);
 };
 
 

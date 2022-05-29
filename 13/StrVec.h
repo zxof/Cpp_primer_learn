@@ -13,10 +13,18 @@ public:
     StrVec(std::initializer_list<std::string>);
     // 拷贝构造函数
     StrVec(const StrVec&);
+    // 移动构造函数
+    StrVec(StrVec &&s)noexcept:element(s.element),first_free(s.first_free),cap(s.cap){
+        s.element = s.first_free = s.cap =0;
+        printf("call move construct");
+    }
+    // 赋值运算符
     StrVec& operator=(const StrVec&);
+    StrVec& operator=(StrVec&&)noexcept;
     ~StrVec();
 
     void push_back(const std::string&);           //添加新的元素
+    void push_back(std::string &&);
     size_t size()const  {return first_free - element;}  //
     size_t capacity()const  {return cap - element;}      //
     std::string *begin() const    {return element;}

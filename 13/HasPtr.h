@@ -15,9 +15,12 @@ public:
     HasPtr1(const std::string&s = std::string()):ps(new std::string(s)),i(0){}
     // 拷贝构造函数,直接拷贝构造一个新值
     HasPtr1(const HasPtr1& h):ps(new std::string(*h.ps)),i(h.i){}
+    // 移动构造函数
+    HasPtr1(HasPtr1&& rhs) noexcept: ps(rhs.ps),i(rhs.i){rhs.ps = 0;}
     // 拷贝复制运算符 
     HasPtr1& operator=(const std::string&);
     HasPtr1& operator=(const HasPtr1&);
+    HasPtr1& operator=(HasPtr1 &&rhs)noexcept;
     // 解引用符号
     std::string& operator*();
 
@@ -39,6 +42,17 @@ HasPtr1& HasPtr1::operator=(const HasPtr1& h){
 HasPtr1& HasPtr1::operator=(const std::string& s){
         *ps = s;
         return *this;
+}
+// 移动赋值运算符
+HasPtr1& HasPtr1::operator=(HasPtr1 &&rhs)noexcept{
+    if(this!=&rhs){
+        delete ps;
+        ps = rhs.ps;
+        i = rhs.i;
+        rhs.ps = nullptr;
+        rhs.i =0 ;
+    }
+    return *this;
 }
 std::string& HasPtr1::operator*(){
     return *ps;
